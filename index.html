@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hiraeth — bot de Discord para comunidades</title>
+  <meta name="description" content="Hiraeth es un bot de Discord con moderación, economía, juegos persistentes, automatizaciones y un asistente de IA opcional. Se invita gratis y se configura desde Discord." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234f6df5'/%3E%3Ctext x='32' y='45' font-family='Segoe UI,Arial' font-size='38' font-weight='700' fill='white' text-anchor='middle'%3EH%3C/text%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --ink: #1f2430;
+      --muted: #5b6472;
+      --accent: #4f6df5;
+      --accent-deep: #3c56d6;
+      --line: #e2e6ec;
+      --tint: #f5f7fc;
+      --white: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.65;
+      color: var(--ink);
+      background: var(--white);
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 0 22px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    h1, h2, h3 { line-height: 1.25; margin: 0; }
+    h2 { font-size: 22px; margin-bottom: 6px; }
+    h3 { font-size: 16px; margin-bottom: 4px; }
+    p { margin: 0 0 14px; }
+    .lead { color: var(--muted); }
+
+    header { border-bottom: 1px solid var(--line); }
+    .bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 0; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .2px; }
+    .mark {
+      width: 28px; height: 28px; border-radius: 8px; background: var(--accent);
+      color: #fff; display: grid; place-items: center; font-size: 15px; font-weight: 700;
+    }
+    .bar nav { display: flex; gap: 18px; font-size: 14px; }
+    .bar nav a { color: var(--muted); }
+    .bar nav a:hover { color: var(--accent); }
+
+    .hero { padding: 56px 0 44px; background: linear-gradient(180deg, var(--tint), #fff); }
+    .hero h1 { font-size: 34px; max-width: 720px; }
+    .hero p.lead { font-size: 17px; max-width: 660px; margin-top: 14px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+    .button {
+      display: inline-block; padding: 11px 20px; border-radius: 8px;
+      background: var(--accent); color: #fff; font-weight: 600; font-size: 15px;
+    }
+    .button:hover { background: var(--accent-deep); text-decoration: none; }
+    .button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+    .button.ghost:hover { border-color: var(--accent); color: var(--accent); }
+    .note-small { font-size: 13px; color: var(--muted); margin-top: 14px; }
+
+    section { padding: 44px 0; border-top: 1px solid var(--line); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin-top: 22px; }
+    .card { border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; background: #fff; }
+    .card p { font-size: 14px; color: var(--muted); margin: 0; }
+    .card .tags { font-size: 13px; color: var(--accent); margin-top: 8px; }
+
+    .plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 22px; }
+    .plan { border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+    .plan.featured { border-color: var(--accent); box-shadow: 0 1px 0 var(--accent) inset, 0 6px 18px rgba(79,109,245,.10); }
+    .plan .name { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+    .plan .price { font-size: 30px; font-weight: 700; margin: 6px 0 2px; }
+    .plan .price span { font-size: 14px; font-weight: 400; color: var(--muted); }
+    .plan ul { margin: 14px 0 0; padding-left: 18px; font-size: 14px; color: var(--muted); }
+    .plan ul li { margin-bottom: 6px; }
+    .badge {
+      display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+      color: var(--accent); background: rgba(79,109,245,.10); border-radius: 999px; padding: 2px 9px; margin-left: 6px;
+    }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 18px; font-size: 14px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    th { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+    td.num, th.num { text-align: right; white-space: nowrap; }
+    tr:last-child td { border-bottom: none; }
+
+    ol.steps { margin: 20px 0 0; padding: 0; list-style: none; counter-reset: step; }
+    ol.steps li { position: relative; padding-left: 42px; margin-bottom: 16px; font-size: 15px; }
+    ol.steps li::before {
+      counter-increment: step; content: counter(step);
+      position: absolute; left: 0; top: 1px; width: 26px; height: 26px; border-radius: 50%;
+      background: var(--tint); border: 1px solid var(--line); color: var(--accent);
+      display: grid; place-items: center; font-size: 13px; font-weight: 700;
+    }
+    ol.steps code, p code, li code {
+      background: var(--tint); border: 1px solid var(--line); border-radius: 5px;
+      padding: 1px 6px; font-size: 13px; color: var(--ink);
+    }
+
+    details { border-bottom: 1px solid var(--line); padding: 14px 0; }
+    details:last-of-type { border-bottom: none; }
+    summary { cursor: pointer; font-weight: 600; }
+    details p { margin: 10px 0 0; font-size: 14px; color: var(--muted); }
+
+    footer { border-top: 1px solid var(--line); background: var(--tint); padding: 30px 0; font-size: 13px; color: var(--muted); }
+    footer .links { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 10px; }
+
+    @media (max-width: 620px) {
+      .hero { padding: 40px 0 34px; }
+      .hero h1 { font-size: 27px; }
+      .bar nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap bar">
+      <div class="brand"><span class="mark">H</span> Hiraeth</div>
+      <nav>
+        <a href="#funciones">Funciones</a>
+        <a href="#asistente">Plan</a>
+        <a href="#comprar">Cómo se compra</a>
+        <a href="#preguntas">Preguntas</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="wrap">
+      <h1>Un bot de Discord para el servidor que ya tenés, no para el que vas a armar después.</h1>
+      <p class="lead">
+        Hiraeth reúne moderación, economía, juegos persistentes, automatizaciones de comunidad y
+        estadísticas en un solo bot. Se invita en un clic, se configura desde Discord con
+        <code>/config</code>, y todo lo que hace el bot es gratis. No hay cuenta que crear ni panel
+        aparte: los ajustes viven en el servidor.
+      </p>
+      <div class="actions">
+        <a class="button" href="https://discord.com/oauth2/authorize?client_id=1179252909226078298&amp;scope=bot%20applications.commands&amp;permissions=1426348698647">Agregar Hiraeth a mi servidor</a>
+        <a class="button ghost" href="#asistente">Ver el plan opcional</a>
+      </div>
+      <p class="note-small">
+        El enlace pide los permisos que el bot necesita para sus comandos. Todo lo importante del bot
+        funciona sin pagar nada.
+      </p>
+    </div>
+  </div>
+
+  <section id="funciones">
+    <div class="wrap">
+      <h2>Qué incluye</h2>
+      <p class="lead">94 comandos repartidos en seis áreas. Cada módulo se activa y se configura por servidor.</p>
+      <div class="grid">
+        <div class="card">
+          <h3>Moderación</h3>
+          <p>Expulsiones, baneos, silencios con duración, advertencias, purgas, bloqueo de canal y de servidor, automoderación y roles temporales.</p>
+          <div class="tags">/ban · /mute · /warns · /automod · /temprole</div>
+        </div>
+        <div class="card">
+          <h3>Comunidad</h3>
+          <p>Anuncios programados, respuestas automáticas por palabra clave, sorteos, encuestas, sugerencias, starboard, tickets, autoroles y cumpleaños.</p>
+          <div class="tags">/announce · /autoresponder · /giveaway · /suggest</div>
+        </div>
+        <div class="card">
+          <h3>Economía y niveles</h3>
+          <p>Moneda del servidor con trabajo, crimen, apuestas, tienda, inventario y robos, más XP por actividad con ranking y niveles configurables.</p>
+          <div class="tags">/balance · /shop · /rank · /xptop</div>
+        </div>
+        <div class="card">
+          <h3>Juegos</h3>
+          <p>Wordle diario y PvP, Batalla Naval, Buscaminas, Ta-Te-Ti, ruleta, trivia, palabras encadenadas y pruebas de escritura, con estadísticas por jugador.</p>
+          <div class="tags">/wordle · /battleship · /tictactoe · /trivia</div>
+        </div>
+        <div class="card">
+          <h3>Estadísticas</h3>
+          <p>Canales de voz o de etapa cuyo nombre refleja un contador del servidor, contador de miembros, y analítica de actividad con exportación.</p>
+          <div class="tags">/statchannel · /analytics · /counter</div>
+        </div>
+        <div class="card">
+          <h3>Asistente del servidor</h3>
+          <p>El módulo opcional: chatbot de IA que responde con la información del servidor, base de conocimientos propia y avisos de ofertas.</p>
+          <div class="tags">/knowledge · /deals · /premium</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="asistente">
+    <div class="wrap">
+      <h2>Asistente del servidor <span class="badge">Opcional</span></h2>
+      <p class="lead">
+        Un plan por servidor, sin costo por miembro y sin cuenta aparte. Incluye el chatbot de IA, la
+        base de conocimientos y los avisos de ofertas, y amplía cuatro límites del bot. Se paga por
+        período; la renovación es una compra más, cuando y si la querés.
+      </p>
+      <div class="plans">
+        <div class="plan">
+          <div class="name">30 días</div>
+          <div class="price">US$ 6 <span>/ mes</span></div>
+          <ul>
+            <li>Chatbot de IA y base de conocimientos</li>
+            <li>Avisos de ofertas</li>
+            <li>Los cuatro límites ampliados</li>
+          </ul>
+        </div>
+        <div class="plan featured">
+          <div class="name">365 días <span class="badge">Mejor valor</span></div>
+          <div class="price">US$ 45 <span>/ año</span></div>
+          <ul>
+            <li>Todo lo del plan de 30 días</li>
+            <li>Equivalentes a US$ 3,75 por mes</li>
+            <li>Un solo pago por todo el año</li>
+          </ul>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Límite</th><th class="num">Sin plan</th><th class="num">Con plan</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Anuncios programados</td><td class="num">3</td><td class="num">10</td></tr>
+          <tr><td>Respuestas automáticas</td><td class="num">10</td><td class="num">25</td></tr>
+          <tr><td>Canales de estadísticas</td><td class="num">2</td><td class="num">10</td></tr>
+          <tr><td>Exportación de analítica</td><td class="num">30 días</td><td class="num">400 días</td></tr>
+        </tbody>
+      </table>
+
+      <p class="note-small">
+        Importes de referencia en dólares; el cobro se hace en pesos argentinos y la página de pago
+        muestra el monto exacto antes de confirmar. Los precios no incluyen impuestos que el medio de
+        pago pueda aplicar.
+      </p>
+    </div>
+  </section>
+
+  <section id="comprar">
+    <div class="wrap">
+      <h2>Cómo se compra</h2>
+      <p class="lead">Desde el mismo servidor, sin salir de Discord más que para pagar.</p>
+      <ol class="steps">
+        <li>Invitá a Hiraeth al servidor que querés mejorar, con los dos permisos que pide el enlace.</li>
+        <li>
+          Alguien con permiso de administrar el servidor ejecuta <code>/premium</code>. El panel muestra
+          el estado del plan y, si todavía no hay uno activo, las dos duraciones con su precio.
+        </li>
+        <li>
+          Al elegir una duración, el bot abre la página de pago del proveedor. Ahí se paga con los medios
+          habituales; el bot nunca ve ni guarda datos de tarjeta.
+        </li>
+        <li>
+          Cuando el pago se confirma, el plan queda activo en ese servidor y los módulos empiezan a
+          responder. <code>/premium</code> muestra la fecha de fin y el tiempo restante.
+        </li>
+      </ol>
+      <p class="note-small">
+        El plan se otorga al servidor, así que un pago no se puede transferir a otro servidor. Si el
+        período vence, no se borra nada: la configuración, la base de conocimientos y los datos de los
+        juegos se conservan, y los módulos dejan de responder hasta la próxima renovación.
+      </p>
+    </div>
+  </section>
+
+  <section id="preguntas">
+    <div class="wrap">
+      <h2>Preguntas frecuentes</h2>
+      <details>
+        <summary>¿El bot es gratis?</summary>
+        <p>
+          Sí. Moderación, economía, juegos, automatizaciones, estadísticas y el resto del catálogo
+          funcionan sin pagar. El plan paga tres módulos concretos —chatbot de IA, base de
+          conocimientos y avisos de ofertas— y amplía los cuatro límites de la tabla de arriba.
+        </p>
+      </details>
+      <details>
+        <summary>¿Se cobra por miembro del servidor?</summary>
+        <p>
+          No. Se cobra por servidor y por período, sin importar cuántas personas haya dentro.
+        </p>
+      </details>
+      <details>
+        <summary>¿Qué pasa cuando termina el período?</summary>
+        <p>
+          Los módulos dejan de responder a partir de esa fecha y los límites vuelven al nivel gratuito.
+          Nada se elimina: lo que ya estaba creado sigue guardado y se puede consultar, editar o borrar.
+        </p>
+      </details>
+      <details>
+        <summary>¿Puedo pedir un reembolso?</summary>
+        <p>
+          Sí, dentro de los 7 días posteriores al pago, en cualquier plan. Después de ese plazo el
+          período corre hasta su fecha de fin, salvo error de cobro o indisponibilidad grave del
+          servicio. Las condiciones completas están en los
+          <a href="https://lucianonecel.github.io/hiraeth-legal/terms-of-service.html#es">Términos del Servicio</a>.
+        </p>
+      </details>
+      <details>
+        <summary>¿Qué datos guarda el bot de una compra?</summary>
+        <p>
+          Un registro de facturación por compra con el servidor, la duración, el importe y la moneda
+          cobrados, el proveedor de pago y el estado del pedido. No guarda tu nombre, tu correo ni el
+          medio de pago: eso queda en el proveedor. El detalle está en la
+          <a href="https://lucianonecel.github.io/hiraeth-legal/privacy-policy.html#es">Política de Privacidad</a>.
+        </p>
+      </details>
+      <details>
+        <summary>¿Cómo pido ayuda o reporto un problema?</summary>
+        <p>
+          Escribiendo a <a href="mailto:neceldev@gmail.com">neceldev@gmail.com</a>. También podés
+          eliminar tus datos desde el bot con <code>/data delete</code>.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div class="links">
+        <a href="https://lucianonecel.github.io/hiraeth-legal/privacy-policy.html">Política de Privacidad</a>
+        <a href="https://lucianonecel.github.io/hiraeth-legal/terms-of-service.html">Términos del Servicio</a>
+        <a href="mailto:neceldev@gmail.com">neceldev@gmail.com</a>
+        <a href="https://discord.com/oauth2/authorize?client_id=1179252909226078298&amp;scope=bot%20applications.commands&amp;permissions=1426348698647">Invitar el bot</a>
+      </div>
+      <div>Hiraeth — proyecto desarrollado por Necel. Bot para la plataforma Discord. No está afiliado a Discord Inc.</div>
+    </div>
+  </footer>
+</body>
+</html>
