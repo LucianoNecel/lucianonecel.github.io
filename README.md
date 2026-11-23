@@ -1,24 +1,30 @@
 # lucianonecel.github.io
 
-Public product page for **Hiraeth**, a Discord bot developed by Necel.
+**Retired.** This repository used to serve the public product page for **Hiraeth**, a Discord bot
+developed by Necel. The product page now lives in the `Hiraeth` repository itself, served by the
+bot's own web surface:
 
-Published at <https://lucianonecel.github.io/> with GitHub Pages (branch `main`, root, legacy
-build). This is the site URL used as the product page for the payment provider's integration
-review: it shows what the bot is, what the optional paid plan costs, and how it is bought.
+- Spanish: <https://hiraeth-kb6c.onrender.com/es>
+- English: <https://hiraeth-kb6c.onrender.com/>
 
-## Layout
+`index.html` is a redirect shell: a `<meta http-equiv="refresh">` plus `rel="canonical"` pointing at
+the Spanish home, so inbound links and search results from the old page land on the page that is kept
+up to date. Nothing else is published from here.
 
-- `index.html` — single self-contained page (inline CSS, no external assets, no build step).
-- `.nojekyll` — serves files verbatim, without Jekyll processing.
+## Why it was retired
+
+The page carried its own copy of the prices, the quota table and the module list. Keeping a second
+public copy of those numbers in sync with the bot's catalog was a manual step that had already drifted
+(the yearly plan was advertised at a price the catalog no longer had), and a public page quoting a
+price the checkout does not charge is worse than no page at all.
+
+The legal documents are unaffected: the Privacy Policy and the Terms of Service live in the separate
+`hiraeth-legal` repository and are served at <https://lucianonecel.github.io/hiraeth-legal/>, which
+does not depend on this repository.
 
 ## Rules for editing
 
-1. Every claim on the page must match what the bot actually does. Prices, limits and included
-   modules are read from the bot's catalog (`src/premium/utils/plans.js`) and quota table
-   (`src/shared/utils/premiumQuotas.js`) in the `Hiraeth` repository — update this page in the same
-   delivery that changes either of them.
-2. The plan is bought from inside Discord with `/premium`; the page never promises a purchase path
-   that does not exist in the bot.
-3. Legal links point at the canonical documents in `hiraeth-legal`; those pages, not this one, are
-   what governs a purchase.
-4. Commit to `main` and push; Pages republishes within a minute.
+1. Do not restore the product page here. Product copy belongs to the `Hiraeth` repository, where the
+   prices come from `listPlans()` and never from a literal.
+2. Keep `index.html` to a redirect plus the plain links above; it must work with scripting disabled.
+3. Point changes at `main` and push; Pages republishes within a minute.
